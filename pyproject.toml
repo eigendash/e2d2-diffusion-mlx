@@ -1,0 +1,12 @@
+[project]
+name = "e2d2"
+version = "0.1.0"
+description = "Toy MLX reimplementation of E2D2 encoder-decoder block diffusion (arXiv:2510.22852)"
+requires-python = ">=3.10"
+dependencies = ["mlx>=0.22", "numpy"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
