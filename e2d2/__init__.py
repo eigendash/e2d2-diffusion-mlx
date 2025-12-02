@@ -9,6 +9,18 @@ Public API::
     from e2d2 import E2D2, E2D2Config, SampleConfig, sample_blockwise
 """
 
+from .model import CallCounts, E2D2, E2D2Config
+from .task import (
+    BOS_ID,
+    DIGIT_OFFSET,
+    MASK_ID,
+    OP_ID,
+    TaskSpec,
+    all_prompts,
+    build_examples,
+    held_out_prompts,
+    make_batch,
+)
 from .layers import Attention, Block, MLP, ModelConfig, Stack
 from .masks import (
     additive_mask,
@@ -34,12 +46,24 @@ __version__ = "0.1.0"
 
 __all__ = [
     "Attention",
+    "BOS_ID",
     "Block",
+    "CallCounts",
+    "E2D2",
+    "E2D2Config",
     "DEFAULT_SCHEDULE",
+    "DIGIT_OFFSET",
+    "MASK_ID",
     "MLP",
+    "OP_ID",
     "ModelConfig",
     "Stack",
+    "TaskSpec",
     "additive_mask",
+    "all_prompts",
+    "build_examples",
+    "held_out_prompts",
+    "make_batch",
     "block_decode_mask",
     "decoder_block_diagonal",
     "decoder_only_mask",
