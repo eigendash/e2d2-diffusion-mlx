@@ -9,6 +9,15 @@ Public API::
     from e2d2 import E2D2, E2D2Config, SampleConfig, sample_blockwise
 """
 
+from .layers import Attention, Block, MLP, ModelConfig, Stack
+from .masks import (
+    additive_mask,
+    block_decode_mask,
+    decoder_block_diagonal,
+    decoder_only_mask,
+    e2d2_decoder_mask,
+    encoder_block_causal,
+)
 from .diffusion import (
     DEFAULT_SCHEDULE,
     LinearNoiseSchedule,
@@ -24,7 +33,18 @@ from .diffusion import (
 __version__ = "0.1.0"
 
 __all__ = [
+    "Attention",
+    "Block",
     "DEFAULT_SCHEDULE",
+    "MLP",
+    "ModelConfig",
+    "Stack",
+    "additive_mask",
+    "block_decode_mask",
+    "decoder_block_diagonal",
+    "decoder_only_mask",
+    "e2d2_decoder_mask",
+    "encoder_block_causal",
     "LinearNoiseSchedule",
     "corruption_mask",
     "discrete_t_grid",
