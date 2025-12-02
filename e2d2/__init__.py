@@ -9,7 +9,23 @@ Public API::
     from e2d2 import E2D2, E2D2Config, SampleConfig, sample_blockwise
 """
 
+from .metrics import (
+    count_parameters,
+    exact_match,
+    nelbo_estimate,
+    per_position_accuracy,
+    token_accuracy,
+)
 from .model import CallCounts, E2D2, E2D2Config
+from .sampling import (
+    SampleConfig,
+    SampleResult,
+    clean_counts,
+    one_shot_predict,
+    predict_tokens,
+    sample_blockwise,
+    unmask_step,
+)
 from .task import (
     BOS_ID,
     DIGIT_OFFSET,
@@ -56,14 +72,26 @@ __all__ = [
     "MASK_ID",
     "MLP",
     "OP_ID",
+    "SampleConfig",
+    "SampleResult",
     "ModelConfig",
     "Stack",
     "TaskSpec",
     "additive_mask",
     "all_prompts",
     "build_examples",
+    "clean_counts",
+    "count_parameters",
+    "exact_match",
     "held_out_prompts",
     "make_batch",
+    "nelbo_estimate",
+    "one_shot_predict",
+    "per_position_accuracy",
+    "predict_tokens",
+    "sample_blockwise",
+    "token_accuracy",
+    "unmask_step",
     "block_decode_mask",
     "decoder_block_diagonal",
     "decoder_only_mask",
