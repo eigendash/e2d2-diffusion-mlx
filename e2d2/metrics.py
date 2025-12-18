@@ -86,7 +86,7 @@ def nelbo_estimate(
         for _ in range(n_samples):
             key, k1 = mx.random.split(key, 2)
             noisy = forward_corrupt_per_block(
-                tokens, t, block_size, cfg.vocab_size - 1, k1
+                tokens, t, block_size, cfg.mask_id, k1
             )
             logits = model.denoise_logits_full(noisy)
             masked = corruption_mask(tokens, noisy).astype(mx.float32)

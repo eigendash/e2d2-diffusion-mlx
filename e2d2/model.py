@@ -57,6 +57,18 @@ class E2D2Config:
     encoder_layers: int = 3
     decoder_layers: int = 1
     mlp_mult: int = 4
+    mask_id: int | None = None
+
+    def __post_init__(self) -> None:
+        if self.mask_id is None:
+            # The paper puts the absorbing state last in the vocabulary
+            # (Appendix A.1: argmax_i m_i = V).  It is carried explicitly rather
+            # than re-derived at each use site, because an implicit
+            # ``vocab_size - 1`` is exactly the kind of assumption that silently
+            # disagrees with the data pipeline's [MASK] id.
+            object.__setattr__(self, "mask_id", self.vocab_size - 1)
+        if not 0 <= self.mask_id < self.vocab_size:
+            raise ValueError("mask_id must be a valid vocabulary index")
 
     @property
     def seq_len(self) -> int:
@@ -122,8 +134,19 @@ class E2D2(nn.Module):
         # Always built, so that ``model.encoder.blocks == []`` is the observable
         # statement of "this model has no encoder stack".  A zero-layer stack is a
         # pure identity and is never invoked by the decoder-only code path.
-        self.encoder = Stack(config.stack_config(config.encoder_layers), with_head=False)
-        self.decoder = Stack(config.stack_config(config.decoder_layers), with_head=True)
+        self.encoder = Stack(
+            config.stack_config(config.encoder_layers), with_head=False, use_pos=True
+        )
+        # The decoder keeps an absolute positional embedding.  It is not optional:
+        # a fully masked block is a block of four *identical* inputs, and with an
+        # all-to-all block-diagonal mask the four query positions would be
+        # interchangeable, so the model could never learn which answer token belongs
+        # at which offset.  Absolute positions are used in both paths and agree:
+        # the training pass gives the noised sequence positions 0..L-1, and the
+        # sampler gives the currently denoised block its absolute position range.
+        self.decoder = Stack(
+            config.stack_config(config.decoder_layers), with_head=True, use_pos=True
+        )
         self.counts = CallCounts()
         self._mask_cache: dict[tuple, mx.array] = {}
 
@@ -212,23 +235,52 @@ class E2D2(nn.Module):
             return self.decoder.embed_tokens(clean_tokens)
         return self._enc(clean_tokens)
 
-    def training_loss(self, clean_tokens: mx.array, key, num_steps: int = 32):
+    def training_loss(
+        self,
+        clean_tokens: mx.array,
+        key,
+        num_steps: int = 32,
+        context_blocks: int = 0,
+        weighting: str = "nelbo",
+    ):
         """Block-diffusion NELBO with an independent noise level per block.
 
         Follows Algorithm 2: one encoder pass over the entire clean sequence and
         one decoder pass over the entire noised sequence, with the Figure 2 masks
         making that single pass model the posterior of every block.
+
+        ``weighting`` selects between the paper's weighted diffusion loss (default,
+        Eq. 4) and the unweighted masked-token mean; see
+        :func:`~e2d2.diffusion.nelbo_loss_per_block` for why they are not the same
+        objective at toy scale.
+
+        ``context_blocks`` keeps the first ``context_blocks`` blocks at ``t = 0``.
+        That mirrors the sampling setup for a conditional task, where the prompt is
+        given clean, and it avoids spending loss on the leading block, whose noised
+        tokens have no earlier context to condition on (under the Figure 2 mask a
+        noised token only sees *earlier* clean blocks, so block 0 is unconditioned).
+        The default 0 is the paper's unconditional block-diffusion objective.
         """
         cfg = self.config
         bsz, seq_len = clean_tokens.shape
         if seq_len != cfg.seq_len:
             raise ValueError(f"expected sequences of length {cfg.seq_len}")
         n_blocks = seq_len // cfg.block_size
+        if not 0 <= context_blocks <= n_blocks:
+            raise ValueError("context_blocks must be within [0, n_blocks]")
 
         key_t, key_q = mx.random.split(key, 2)
         t = sample_train_times(num_steps, bsz * n_blocks, key_t).reshape(bsz, n_blocks)
+        if context_blocks:
+            t = mx.concatenate(
+                [
+                    mx.zeros((bsz, context_blocks), dtype=mx.float32),
+                    t[:, context_blocks:],
+                ],
+                axis=1,
+            )
         noisy = forward_corrupt_per_block(
-            clean_tokens, t, cfg.block_size, cfg.vocab_size - 1, key_q
+            clean_tokens, t, cfg.block_size, cfg.mask_id, key_q
         )
         h = self.clean_representation(clean_tokens)
         z = self.decoder.embed_tokens(noisy)
@@ -238,7 +290,13 @@ class E2D2(nn.Module):
         # clean-token representation itself.
         logits = logits[:, seq_len:, :]
         return nelbo_loss_per_block(
-            logits, clean_tokens, noisy, t, cfg.block_size, DEFAULT_SCHEDULE
+            logits,
+            clean_tokens,
+            noisy,
+            t,
+            cfg.block_size,
+            DEFAULT_SCHEDULE,
+            weighting=weighting,
         )
 
     def denoise_logits_full(
@@ -295,9 +353,13 @@ class E2D2(nn.Module):
         """
         cfg = self.config
         n_prefix = h_prefix.shape[1]
+        # The noised block gets its *absolute* offsets in the generated sequence,
+        # which is exactly the position range those tokens have in the training
+        # pass (where the whole noised sequence is embedded at 0..L-1).  Getting
+        # this wrong is silent: shapes and masks stay valid while the block's
+        # positional embedding is shifted by ``n_prefix``.
         z = self.decoder.embed_tokens(
-            noisy_block,
-            positions=mx.arange(n_prefix, n_prefix + cfg.block_size),
+            noisy_block, positions=mx.arange(n_prefix, n_prefix + cfg.block_size)
         )
         x = mx.concatenate([h_prefix, z], axis=1)
         n_prefix_blocks = n_prefix // cfg.block_size

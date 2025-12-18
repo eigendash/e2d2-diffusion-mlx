@@ -137,9 +137,13 @@ def nelbo_loss(
     probability constraint: the model never has to predict ``[MASK]`` and clean
     positions carry no reconstruction term once ``T -> infinity``).
 
+    The weighted sum is divided by the *sequence length* ``L``, a constant, which
+    is the convention used by the masked-diffusion implementations: dividing by the
+    number of masked positions instead would cancel the weight ``w(t)`` exactly and
+    turn the NELBO into a plain masked-token mean.
+
     Returns ``(mean_loss, sum_weight, n_masked)``; the two scalars let callers
-    aggregate a correctly weighted average over batch elements with different
-    numbers of masked positions.
+    aggregate over batch elements with different numbers of masked positions.
     """
     masked = corruption_mask(tokens, noisy).astype(mx.float32)
     logp = mx.log(mx.softmax(logits.astype(mx.float32), axis=-1) + 1e-30)
@@ -150,9 +154,8 @@ def nelbo_loss(
     per_token = -target_logp * weight[:, None] * masked
     n_masked = masked.sum()
     total_weight = (weight[:, None] * masked).sum()
-    # Guard the all-clean case, which happens when t is sampled at 0.
-    safe_weight = mx.where(total_weight > 0, total_weight, mx.array(1.0, mx.float32))
-    return per_token.sum() / safe_weight, total_weight, n_masked
+    # Constant denominator: the weight stays part of the objective.
+    return per_token.sum() / float(tokens.shape[1]), total_weight, n_masked
 
 
 def nelbo_loss_per_block(
@@ -162,18 +165,35 @@ def nelbo_loss_per_block(
     t: mx.array,
     block_size: int,
     schedule=DEFAULT_SCHEDULE,
+    weighting: str = "nelbo",
 ) -> mx.array:
-    """Weighted masked-token cross-entropy with one noise level per block.
+    """Masked-token cross-entropy with one noise level per block.
 
-    For each block the loss is the importance-weighted mean of the per-token
-    cross-entropies at the masked positions,
+    Two aggregation choices, both used in this repo and both reported in the
+    README:
 
-        L_b = (1 / m_b) * sum_{l in block b, masked} (alpha'_{t_b} / (1 - alpha_{t_b})) * -log p(x_l | z),
+    ``weighting="nelbo"`` (default)
+        The paper's Eq. 4 / Eq. 5 diffusion loss.  Each masked token is weighted by
+        ``alpha'_t / (1 - alpha_t)`` and the block's sum is divided by the *block
+        size* -- a constant -- so the weight survives:
 
-    with ``m_b`` the number of masked positions in the block, and the returned
-    value is the mean over blocks.  Normalising per block rather than per sequence
-    is what stops a block that happens to be fully masked from dominating the
-    batch; it is the objective ``scripts/train_toy.py`` optimises.
+            L_b = (1 / S) * sum_{l in block b, masked} w(t_b) * -log p(x_l | z)
+
+        For the linear schedule ``w(t) = 1 / (1 - t)``, which is large exactly when
+        the block is close to fully masked.  That is the regime sampling starts
+        from, so this objective is what makes denoising from an all-mask block
+        learnable.
+
+    ``weighting="uniform"``
+        The unweighted mean cross-entropy over masked positions.  Note that
+        dividing by the number of masked positions cancels ``w(t)`` exactly, so
+        this is *not* a reparameterisation of the NELBO; it is the objective the
+        authors' reference implementation uses during training (its
+        ``_compute_loss`` in ``src/denoiser/diffusion.py`` branches on
+        ``self.training`` and takes the unweighted sum over masked tokens).  It
+        concentrates the loss on lightly noised blocks, where a block's own clean
+        tokens are available, so at toy scale it under-trains the cross-attention
+        that full-block denoising needs.
 
     Blocks with ``t_b = 0`` have no masked positions and contribute nothing.
     """
@@ -184,6 +204,9 @@ def nelbo_loss_per_block(
     t_arr = t if isinstance(t, mx.array) else mx.array(t, dtype=mx.float32)
     if t_arr.shape != (bsz, n_blocks):
         raise ValueError(f"t must be {(bsz, n_blocks)}, got {t_arr.shape}")
+    if weighting not in ("nelbo", "uniform"):
+        raise ValueError("weighting must be 'nelbo' or 'uniform'")
+
     masked = corruption_mask(tokens, noisy).astype(mx.float32)
     logp = mx.log(mx.softmax(logits.astype(mx.float32), axis=-1) + 1e-30)
     target_logp = mx.take_along_axis(logp, tokens[..., None], axis=-1)[..., 0]
@@ -191,12 +214,12 @@ def nelbo_loss_per_block(
     weight_per_token = mx.repeat(weight, block_size, axis=1)
     per_token = (-target_logp) * weight_per_token * masked
     per_block_sum = per_token.reshape(bsz, n_blocks, block_size).sum(axis=-1)
-    per_block_masked = masked.reshape(bsz, n_blocks, block_size).sum(axis=-1)
-    # Denominator is the number of masked positions times that block's weight, so
-    # the block's loss is a weighted mean; using the count alone would leave a bare
-    # factor of alpha'_t / (1 - alpha_t) in the objective.
-    per_block_weight = per_block_masked * weight
-    safe = mx.where(
-        per_block_weight > 0, per_block_weight, mx.array(1.0, mx.float32)
-    )
-    return (per_block_sum / safe).mean()
+
+    if weighting == "uniform":
+        # Dividing by the masked count cancels w(t) exactly, leaving the plain mean.
+        per_block_count = masked.reshape(bsz, n_blocks, block_size).sum(axis=-1)
+        safe = mx.where(per_block_count > 0, per_block_count, mx.array(1.0, mx.float32))
+        return (per_block_sum / safe).mean()
+    # The weighted sum is divided by the block size, a constant: the importance
+    # weight is part of the objective, not a normalisation that cancels.
+    return (per_block_sum / float(block_size)).mean()

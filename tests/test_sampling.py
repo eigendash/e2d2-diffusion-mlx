@@ -220,9 +220,9 @@ def test_unmask_step_ties_break_on_position():
     block = mx.full((4,), MASK_ID, dtype=mx.int32)
     logits = mx.zeros((4, 8))  # every position equally confident
     out = np.array(unmask_step(block, logits, MASK_ID, n_clean=2))
-    # the two lowest positions win the tie, and argmax's own tie-break picks the
-    # lowest non-mask token, which is 1 because 0 is [MASK]
-    assert list(out) == [1, 1, MASK_ID, MASK_ID]
+    # the two lowest positions win the tie, and with uniform logits the argmax
+    # picks token 0 ([BOS], the lowest index that is not [MASK])
+    assert list(out) == [0, 0, MASK_ID, MASK_ID]
 
 
 def test_unmask_step_n_clean_zero_is_a_no_op():

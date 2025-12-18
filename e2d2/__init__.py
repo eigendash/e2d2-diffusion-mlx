@@ -30,12 +30,12 @@ from .task import (
     BOS_ID,
     DIGIT_OFFSET,
     MASK_ID,
-    OP_ID,
     TaskSpec,
     all_prompts,
     build_examples,
     held_out_prompts,
     make_batch,
+    split_prompts,
 )
 from .layers import Attention, Block, MLP, ModelConfig, Stack
 from .masks import (
@@ -71,7 +71,6 @@ __all__ = [
     "DIGIT_OFFSET",
     "MASK_ID",
     "MLP",
-    "OP_ID",
     "SampleConfig",
     "SampleResult",
     "ModelConfig",
@@ -90,6 +89,7 @@ __all__ = [
     "per_position_accuracy",
     "predict_tokens",
     "sample_blockwise",
+    "split_prompts",
     "token_accuracy",
     "unmask_step",
     "block_decode_mask",
