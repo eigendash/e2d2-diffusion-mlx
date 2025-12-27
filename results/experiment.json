@@ -1,0 +1,1016 @@
+{
+  "paper": {
+    "title": "Encoder-Decoder Diffusion Language Models for Efficient Training and Inference",
+    "arxiv": "2510.22852"
+  },
+  "note": "Independent toy-scale reimplementation. Numbers are not comparable to the paper's summarization/translation/GSM8K results or its H100 throughput.",
+  "args": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "steps": 5000,
+    "batch_size": 64,
+    "lr": 0.001,
+    "modulus": 16,
+    "n_train": 1024,
+    "n_held_out": 1024,
+    "d_model": 64,
+    "n_heads": 4,
+    "num_t_grid": 32,
+    "sample_steps": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "sample_seqs": 64,
+    "timing_repeats": 10,
+    "nelbo_grid": 16,
+    "nelbo_samples": 2,
+    "log_every": 1000,
+    "weighting": "uniform",
+    "context_blocks": 1,
+    "cost_prompt_blocks": [
+      1,
+      2,
+      3
+    ],
+    "out_prefix": "experiment"
+  },
+  "task": {
+    "modulus": 16,
+    "block_size": 4,
+    "prompt_blocks": 1,
+    "n_blocks": 2,
+    "n_answer_blocks": 1,
+    "seq_len": 8,
+    "vocab_size": 18,
+    "mask_id": 17,
+    "prompt_len": 4,
+    "answer_len": 4,
+    "n_content": 3,
+    "prompt_space": 4096,
+    "n_train": 1024,
+    "n_held_out": 1024
+  },
+  "runs": {
+    "e2d2-4/1": [
+      {
+        "seed": 0,
+        "n_params": 332800,
+        "train_final_loss": 8.026184124901192e-05,
+        "train_seconds": 33.443021666957065,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 1,
+              "encoder_tokens": 4,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 2,
+              "encoder_tokens": 4,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 4,
+              "encoder_tokens": 4,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 8,
+              "encoder_tokens": 4,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 4.1165359352383065e-05
+      },
+      {
+        "seed": 1,
+        "n_params": 332800,
+        "train_final_loss": 8.565598393033724e-05,
+        "train_seconds": 34.66532912501134,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 1,
+              "encoder_tokens": 4,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 2,
+              "encoder_tokens": 4,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 0.990234375,
+            "token_accuracy": 0.99755859375,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 4,
+              "encoder_tokens": 4,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 0.9267578125,
+            "token_accuracy": 0.981689453125,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 8,
+              "encoder_tokens": 4,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 4.376281326098431e-05
+      },
+      {
+        "seed": 2,
+        "n_params": 332800,
+        "train_final_loss": 8.949334795033793e-05,
+        "train_seconds": 34.33787383302115,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 1,
+              "encoder_tokens": 4,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 0.9970703125,
+            "token_accuracy": 0.999267578125,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 2,
+              "encoder_tokens": 4,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 0.9951171875,
+            "token_accuracy": 0.998779296875,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 4,
+              "encoder_tokens": 4,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 4,
+              "decoder_layer_forwards": 8,
+              "encoder_tokens": 4,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 4.5823847540076313e-05
+      }
+    ],
+    "e2d2-1/3": [
+      {
+        "seed": 0,
+        "n_params": 267136,
+        "train_final_loss": 6.901157616084674e-05,
+        "train_seconds": 29.23044691584073,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 3,
+              "encoder_tokens": 4,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 6,
+              "encoder_tokens": 4,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 12,
+              "encoder_tokens": 4,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 24,
+              "encoder_tokens": 4,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 3.532120321675703e-05
+      },
+      {
+        "seed": 1,
+        "n_params": 267136,
+        "train_final_loss": 7.10656806404586e-05,
+        "train_seconds": 29.09902587486431,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 3,
+              "encoder_tokens": 4,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 6,
+              "encoder_tokens": 4,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 0.990234375,
+            "token_accuracy": 0.99755859375,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 12,
+              "encoder_tokens": 4,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 0.88671875,
+            "token_accuracy": 0.9716796875,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 24,
+              "encoder_tokens": 4,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 3.6739710799323875e-05
+      },
+      {
+        "seed": 2,
+        "n_params": 267136,
+        "train_final_loss": 6.618522107601165e-05,
+        "train_seconds": 28.99686025013216,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 3,
+              "encoder_tokens": 4,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 6,
+              "encoder_tokens": 4,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 12,
+              "encoder_tokens": 4,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 1,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 1,
+              "decoder_layer_forwards": 24,
+              "encoder_tokens": 4,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 3.331999073085072e-05
+      }
+    ],
+    "decoder-only-4": [
+      {
+        "seed": 0,
+        "n_params": 267136,
+        "train_final_loss": 6.444972463214072e-05,
+        "train_seconds": 30.501140666892752,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 4,
+              "encoder_tokens": 0,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 8,
+              "encoder_tokens": 0,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 16,
+              "encoder_tokens": 0,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 0.99609375,
+            "token_accuracy": 0.9990234375,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 32,
+              "encoder_tokens": 0,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 3.309923851311042e-05
+      },
+      {
+        "seed": 1,
+        "n_params": 267136,
+        "train_final_loss": 6.806756362493616e-05,
+        "train_seconds": 30.491083916043863,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 4,
+              "encoder_tokens": 0,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 8,
+              "encoder_tokens": 0,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 16,
+              "encoder_tokens": 0,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 32,
+              "encoder_tokens": 0,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 3.442805019752272e-05
+      },
+      {
+        "seed": 2,
+        "n_params": 267136,
+        "train_final_loss": 6.229552869626786e-05,
+        "train_seconds": 30.469347291858867,
+        "predictions": {
+          "1": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 1,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 4,
+              "encoder_tokens": 0,
+              "decoder_tokens": 4
+            }
+          },
+          "2": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 2,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 8,
+              "encoder_tokens": 0,
+              "decoder_tokens": 8
+            }
+          },
+          "4": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 4,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 16,
+              "encoder_tokens": 0,
+              "decoder_tokens": 16
+            }
+          },
+          "8": {
+            "exact_match": 1.0,
+            "token_accuracy": 1.0,
+            "sample_calls": {
+              "encoder_calls": 0,
+              "decoder_calls": 8,
+              "encoder_layer_forwards": 0,
+              "decoder_layer_forwards": 32,
+              "encoder_tokens": 0,
+              "decoder_tokens": 32
+            }
+          }
+        },
+        "nelbo_surrogate": 3.153044041372718e-05
+      }
+    ]
+  },
+  "cost": {
+    "e2d2-4/1": {
+      "n_params": 332800,
+      "full_stack_layers": 5,
+      "per_steps": {
+        "1": {
+          "num_steps": 1,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 1,
+          "encoder_layer_forwards_per_sequence": 4,
+          "decoder_layer_forwards_per_sequence": 1,
+          "total_layer_forwards_per_sequence": 5,
+          "wall_seconds_per_sequence_best": 1.2191409041406587e-05,
+          "wall_seconds_per_sequence_median": 1.3483069778885692e-05
+        },
+        "2": {
+          "num_steps": 2,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 2,
+          "encoder_layer_forwards_per_sequence": 4,
+          "decoder_layer_forwards_per_sequence": 2,
+          "total_layer_forwards_per_sequence": 6,
+          "wall_seconds_per_sequence_best": 0.0009375208246638067,
+          "wall_seconds_per_sequence_median": 0.0009571796872478444
+        },
+        "4": {
+          "num_steps": 4,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 4,
+          "encoder_layer_forwards_per_sequence": 4,
+          "decoder_layer_forwards_per_sequence": 4,
+          "total_layer_forwards_per_sequence": 8,
+          "wall_seconds_per_sequence_best": 0.002605510420835344,
+          "wall_seconds_per_sequence_median": 0.0027644905621855287
+        },
+        "8": {
+          "num_steps": 8,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 8,
+          "encoder_layer_forwards_per_sequence": 4,
+          "decoder_layer_forwards_per_sequence": 8,
+          "total_layer_forwards_per_sequence": 12,
+          "wall_seconds_per_sequence_best": 0.0032284121080010664,
+          "wall_seconds_per_sequence_median": 0.0032934651644609403
+        }
+      }
+    },
+    "e2d2-1/3": {
+      "n_params": 267136,
+      "full_stack_layers": 4,
+      "per_steps": {
+        "1": {
+          "num_steps": 1,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 1,
+          "encoder_layer_forwards_per_sequence": 1,
+          "decoder_layer_forwards_per_sequence": 3,
+          "total_layer_forwards_per_sequence": 4,
+          "wall_seconds_per_sequence_best": 6.399081030394882e-06,
+          "wall_seconds_per_sequence_median": 6.7906948970630765e-06
+        },
+        "2": {
+          "num_steps": 2,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 2,
+          "encoder_layer_forwards_per_sequence": 1,
+          "decoder_layer_forwards_per_sequence": 6,
+          "total_layer_forwards_per_sequence": 7,
+          "wall_seconds_per_sequence_best": 0.0008622441418992821,
+          "wall_seconds_per_sequence_median": 0.0009354472640552558
+        },
+        "4": {
+          "num_steps": 4,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 4,
+          "encoder_layer_forwards_per_sequence": 1,
+          "decoder_layer_forwards_per_sequence": 12,
+          "total_layer_forwards_per_sequence": 13,
+          "wall_seconds_per_sequence_best": 0.0027794407651526853,
+          "wall_seconds_per_sequence_median": 0.002814677733113058
+        },
+        "8": {
+          "num_steps": 8,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 1,
+          "decoder_calls_per_sequence": 8,
+          "encoder_layer_forwards_per_sequence": 1,
+          "decoder_layer_forwards_per_sequence": 24,
+          "total_layer_forwards_per_sequence": 25,
+          "wall_seconds_per_sequence_best": 0.0031356432191387285,
+          "wall_seconds_per_sequence_median": 0.0032584713590040337
+        }
+      }
+    },
+    "decoder-only-4": {
+      "n_params": 267136,
+      "full_stack_layers": 4,
+      "per_steps": {
+        "1": {
+          "num_steps": 1,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 0,
+          "decoder_calls_per_sequence": 1,
+          "encoder_layer_forwards_per_sequence": 0,
+          "decoder_layer_forwards_per_sequence": 4,
+          "total_layer_forwards_per_sequence": 4,
+          "wall_seconds_per_sequence_best": 6.716141797369346e-06,
+          "wall_seconds_per_sequence_median": 6.9179677666397765e-06
+        },
+        "2": {
+          "num_steps": 2,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 0,
+          "decoder_calls_per_sequence": 2,
+          "encoder_layer_forwards_per_sequence": 0,
+          "decoder_layer_forwards_per_sequence": 8,
+          "total_layer_forwards_per_sequence": 8,
+          "wall_seconds_per_sequence_best": 0.0009491080636507832,
+          "wall_seconds_per_sequence_median": 0.000977139967289986
+        },
+        "4": {
+          "num_steps": 4,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 0,
+          "decoder_calls_per_sequence": 4,
+          "encoder_layer_forwards_per_sequence": 0,
+          "decoder_layer_forwards_per_sequence": 16,
+          "total_layer_forwards_per_sequence": 16,
+          "wall_seconds_per_sequence_best": 0.002644725267600734,
+          "wall_seconds_per_sequence_median": 0.0027305797575536417
+        },
+        "8": {
+          "num_steps": 8,
+          "n_sequences": 64,
+          "encoder_calls_per_sequence": 0,
+          "decoder_calls_per_sequence": 8,
+          "encoder_layer_forwards_per_sequence": 0,
+          "decoder_layer_forwards_per_sequence": 32,
+          "total_layer_forwards_per_sequence": 32,
+          "wall_seconds_per_sequence_best": 0.0031119563900574576,
+          "wall_seconds_per_sequence_median": 0.0032789811157272197
+        }
+      }
+    }
+  },
+  "summary": {
+    "quality": {
+      "e2d2-4/1": {
+        "n_params_mean": 332800.0,
+        "train_final_loss_mean": 8.513705770989571e-05,
+        "train_seconds_mean": 34.148741541663185,
+        "train_loss_mean": 8.513705770989571e-05,
+        "exact_match_mean": 0.9755859375,
+        "exact_match_std": 0.03452669830012439,
+        "token_accuracy_mean": 0.993896484375,
+        "token_accuracy_std": 0.008631674575031098,
+        "nelbo_surrogate_mean": 4.358400671781456e-05,
+        "nelbo_surrogate_std": 1.9060179928548448e-06,
+        "sample_steps": "8",
+        "per_steps": {
+          "1": {
+            "exact_match_mean": 1.0,
+            "exact_match_std": 0.0,
+            "token_accuracy_mean": 1.0,
+            "token_accuracy_std": 0.0
+          },
+          "2": {
+            "exact_match_mean": 0.9990234375,
+            "exact_match_std": 0.0013810679320049757,
+            "token_accuracy_mean": 0.999755859375,
+            "token_accuracy_std": 0.00034526698300124393
+          },
+          "4": {
+            "exact_match_mean": 0.9951171875,
+            "exact_match_std": 0.0039867997115611625,
+            "token_accuracy_mean": 0.998779296875,
+            "token_accuracy_std": 0.0009966999278902906
+          },
+          "8": {
+            "exact_match_mean": 0.9755859375,
+            "exact_match_std": 0.03452669830012439,
+            "token_accuracy_mean": 0.993896484375,
+            "token_accuracy_std": 0.008631674575031098
+          }
+        }
+      },
+      "e2d2-1/3": {
+        "n_params_mean": 267136.0,
+        "train_final_loss_mean": 6.875415929243901e-05,
+        "train_seconds_mean": 29.108777680279065,
+        "train_loss_mean": 6.875415929243901e-05,
+        "exact_match_mean": 0.9622395833333334,
+        "exact_match_std": 0.05340129337085906,
+        "token_accuracy_mean": 0.9905598958333334,
+        "token_accuracy_std": 0.013350323342714765,
+        "nelbo_surrogate_mean": 3.512696824897721e-05,
+        "nelbo_surrogate_std": 1.4028344529822058e-06,
+        "sample_steps": "8",
+        "per_steps": {
+          "1": {
+            "exact_match_mean": 1.0,
+            "exact_match_std": 0.0,
+            "token_accuracy_mean": 1.0,
+            "token_accuracy_std": 0.0
+          },
+          "2": {
+            "exact_match_mean": 1.0,
+            "exact_match_std": 0.0,
+            "token_accuracy_mean": 1.0,
+            "token_accuracy_std": 0.0
+          },
+          "4": {
+            "exact_match_mean": 0.9967447916666666,
+            "exact_match_std": 0.004603559773349919,
+            "token_accuracy_mean": 0.9991861979166666,
+            "token_accuracy_std": 0.0011508899433374797
+          },
+          "8": {
+            "exact_match_mean": 0.9622395833333334,
+            "exact_match_std": 0.05340129337085906,
+            "token_accuracy_mean": 0.9905598958333334,
+            "token_accuracy_std": 0.013350323342714765
+          }
+        }
+      },
+      "decoder-only-4": {
+        "n_params_mean": 267136.0,
+        "train_final_loss_mean": 6.493760565111492e-05,
+        "train_seconds_mean": 30.487190624931827,
+        "train_loss_mean": 6.493760565111492e-05,
+        "exact_match_mean": 0.9986979166666666,
+        "exact_match_std": 0.0018414239093399675,
+        "token_accuracy_mean": 0.9996744791666666,
+        "token_accuracy_std": 0.0004603559773349919,
+        "nelbo_surrogate_mean": 3.301924304145344e-05,
+        "nelbo_surrogate_std": 1.184295872773109e-06,
+        "sample_steps": "8",
+        "per_steps": {
+          "1": {
+            "exact_match_mean": 1.0,
+            "exact_match_std": 0.0,
+            "token_accuracy_mean": 1.0,
+            "token_accuracy_std": 0.0
+          },
+          "2": {
+            "exact_match_mean": 1.0,
+            "exact_match_std": 0.0,
+            "token_accuracy_mean": 1.0,
+            "token_accuracy_std": 0.0
+          },
+          "4": {
+            "exact_match_mean": 1.0,
+            "exact_match_std": 0.0,
+            "token_accuracy_mean": 1.0,
+            "token_accuracy_std": 0.0
+          },
+          "8": {
+            "exact_match_mean": 0.9986979166666666,
+            "exact_match_std": 0.0018414239093399675,
+            "token_accuracy_mean": 0.9996744791666666,
+            "token_accuracy_std": 0.0004603559773349919
+          }
+        }
+      }
+    },
+    "cost_ratio": {
+      "exact_match_split_over_baseline": 0.9768578878748371,
+      "layer_forward_ratio_split_over_baseline": 0.375,
+      "wall_ratio_split_over_baseline": 1.0374220276079957,
+      "encoder_call_ratio_split_over_baseline": 0.125
+    },
+    "encoder_call_scaling": [
+      {
+        "prompt_blocks": 1,
+        "n_blocks": 2,
+        "generated_blocks": 1,
+        "num_steps": 1,
+        "encoder_calls_per_sequence": 1,
+        "decoder_calls_per_sequence": 1,
+        "encoder_layer_forwards_per_sequence": 3,
+        "decoder_layer_forwards_per_sequence": 1,
+        "decoder_only_network_calls_per_sequence": 1,
+        "wall_seconds_per_sequence_median": 7.021484634606168e-06,
+        "n_params": 267136
+      },
+      {
+        "prompt_blocks": 1,
+        "n_blocks": 2,
+        "generated_blocks": 1,
+        "num_steps": 2,
+        "encoder_calls_per_sequence": 1,
+        "decoder_calls_per_sequence": 2,
+        "encoder_layer_forwards_per_sequence": 3,
+        "decoder_layer_forwards_per_sequence": 2,
+        "decoder_only_network_calls_per_sequence": 2,
+        "wall_seconds_per_sequence_median": 0.0009227636619471014,
+        "n_params": 267136
+      },
+      {
+        "prompt_blocks": 1,
+        "n_blocks": 2,
+        "generated_blocks": 1,
+        "num_steps": 4,
+        "encoder_calls_per_sequence": 1,
+        "decoder_calls_per_sequence": 4,
+        "encoder_layer_forwards_per_sequence": 3,
+        "decoder_layer_forwards_per_sequence": 4,
+        "decoder_only_network_calls_per_sequence": 4,
+        "wall_seconds_per_sequence_median": 0.002949431969682337,
+        "n_params": 267136
+      },
+      {
+        "prompt_blocks": 1,
+        "n_blocks": 2,
+        "generated_blocks": 1,
+        "num_steps": 8,
+        "encoder_calls_per_sequence": 1,
+        "decoder_calls_per_sequence": 8,
+        "encoder_layer_forwards_per_sequence": 3,
+        "decoder_layer_forwards_per_sequence": 8,
+        "decoder_only_network_calls_per_sequence": 8,
+        "wall_seconds_per_sequence_median": 0.003215942055248888,
+        "n_params": 267136
+      },
+      {
+        "prompt_blocks": 2,
+        "n_blocks": 4,
+        "generated_blocks": 2,
+        "num_steps": 1,
+        "encoder_calls_per_sequence": 2,
+        "decoder_calls_per_sequence": 2,
+        "encoder_layer_forwards_per_sequence": 15,
+        "decoder_layer_forwards_per_sequence": 2,
+        "decoder_only_network_calls_per_sequence": 2,
+        "wall_seconds_per_sequence_median": 1.4592766092391685e-05,
+        "n_params": 269184
+      },
+      {
+        "prompt_blocks": 2,
+        "n_blocks": 4,
+        "generated_blocks": 2,
+        "num_steps": 2,
+        "encoder_calls_per_sequence": 2,
+        "decoder_calls_per_sequence": 4,
+        "encoder_layer_forwards_per_sequence": 15,
+        "decoder_layer_forwards_per_sequence": 4,
+        "decoder_only_network_calls_per_sequence": 4,
+        "wall_seconds_per_sequence_median": 0.0025258434307033895,
+        "n_params": 269184
+      },
+      {
+        "prompt_blocks": 2,
+        "n_blocks": 4,
+        "generated_blocks": 2,
+        "num_steps": 4,
+        "encoder_calls_per_sequence": 2,
+        "decoder_calls_per_sequence": 8,
+        "encoder_layer_forwards_per_sequence": 15,
+        "decoder_layer_forwards_per_sequence": 8,
+        "decoder_only_network_calls_per_sequence": 8,
+        "wall_seconds_per_sequence_median": 0.0059676155615306925,
+        "n_params": 269184
+      },
+      {
+        "prompt_blocks": 2,
+        "n_blocks": 4,
+        "generated_blocks": 2,
+        "num_steps": 8,
+        "encoder_calls_per_sequence": 2,
+        "decoder_calls_per_sequence": 16,
+        "encoder_layer_forwards_per_sequence": 15,
+        "decoder_layer_forwards_per_sequence": 16,
+        "decoder_only_network_calls_per_sequence": 16,
+        "wall_seconds_per_sequence_median": 0.006526651039166609,
+        "n_params": 269184
+      },
+      {
+        "prompt_blocks": 3,
+        "n_blocks": 6,
+        "generated_blocks": 3,
+        "num_steps": 1,
+        "encoder_calls_per_sequence": 3,
+        "decoder_calls_per_sequence": 3,
+        "encoder_layer_forwards_per_sequence": 36,
+        "decoder_layer_forwards_per_sequence": 3,
+        "decoder_only_network_calls_per_sequence": 3,
+        "wall_seconds_per_sequence_median": 2.1464524252223782e-05,
+        "n_params": 271232
+      },
+      {
+        "prompt_blocks": 3,
+        "n_blocks": 6,
+        "generated_blocks": 3,
+        "num_steps": 2,
+        "encoder_calls_per_sequence": 3,
+        "decoder_calls_per_sequence": 6,
+        "encoder_layer_forwards_per_sequence": 36,
+        "decoder_layer_forwards_per_sequence": 6,
+        "decoder_only_network_calls_per_sequence": 6,
+        "wall_seconds_per_sequence_median": 0.0029514977268263465,
+        "n_params": 271232
+      },
+      {
+        "prompt_blocks": 3,
+        "n_blocks": 6,
+        "generated_blocks": 3,
+        "num_steps": 4,
+        "encoder_calls_per_sequence": 3,
+        "decoder_calls_per_sequence": 12,
+        "encoder_layer_forwards_per_sequence": 36,
+        "decoder_layer_forwards_per_sequence": 12,
+        "decoder_only_network_calls_per_sequence": 12,
+        "wall_seconds_per_sequence_median": 0.008603035485066357,
+        "n_params": 271232
+      },
+      {
+        "prompt_blocks": 3,
+        "n_blocks": 6,
+        "generated_blocks": 3,
+        "num_steps": 8,
+        "encoder_calls_per_sequence": 3,
+        "decoder_calls_per_sequence": 24,
+        "encoder_layer_forwards_per_sequence": 36,
+        "decoder_layer_forwards_per_sequence": 24,
+        "decoder_only_network_calls_per_sequence": 24,
+        "wall_seconds_per_sequence_median": 0.009774802734682453,
+        "n_params": 271232
+      }
+    ]
+  }
+}

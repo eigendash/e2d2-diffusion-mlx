@@ -1,0 +1,191 @@
+E2D2 toy experiment: encoder-decoder block diffusion vs decoder-only block diffusion
+Paper: arXiv:2510.22852 (Encoder-Decoder Diffusion Language Models for Efficient
+       Training and Inference).  This is an independent toy-scale implementation;
+       nothing here is comparable to the paper's reported numbers.
+
+host           : macOS-15.7.7-arm64-arm-64bit / arm64
+mlx            : 0.32.3
+task           : [BOS, d1, d2, d3] then the same block reversed, M = 16
+prompt space   : 4096 distinct prompts
+sequence       : 2 blocks x 4 tokens = 8
+vocabulary     : 18 tokens ([BOS]=0, digits 1..16, [MASK]=17 last)
+train / held-out prompts: 1024 / 1024 (disjoint, total space 4096)
+training       : 5000 AdamW steps, lr 0.001, batch 64, t grid 32
+loss           : weighting=uniform, context_blocks=1 (prompt block kept clean)
+seeds          : [0, 1, 2]
+
+== e2d2-4/1 (encoder_layers=4, decoder_layers=1) ==
+  seed 0: training
+    [e2d2-4/1] step     1/5000  loss 8.6810  mean(last 100) 8.6810
+    [e2d2-4/1] step  1000/5000  loss 0.0014  mean(last 100) 0.0012
+    [e2d2-4/1] step  2000/5000  loss 0.0005  mean(last 100) 0.0005
+    [e2d2-4/1] step  3000/5000  loss 0.0003  mean(last 100) 0.0003
+    [e2d2-4/1] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [e2d2-4/1] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 0: params 332800, final train loss 0.000080, held-out exact match (T=8) 1.0000, NELBO surrogate 0.000041
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 2
+      T=  4: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 4
+      T=  8: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 8
+  seed 1: training
+    [e2d2-4/1] step     1/5000  loss 7.5502  mean(last 100) 7.5502
+    [e2d2-4/1] step  1000/5000  loss 0.0016  mean(last 100) 0.0012
+    [e2d2-4/1] step  2000/5000  loss 0.0005  mean(last 100) 0.0005
+    [e2d2-4/1] step  3000/5000  loss 0.0002  mean(last 100) 0.0003
+    [e2d2-4/1] step  4000/5000  loss 0.0001  mean(last 100) 0.0002
+    [e2d2-4/1] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 1: params 332800, final train loss 0.000086, held-out exact match (T=8) 0.9268, NELBO surrogate 0.000044
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 2
+      T=  4: exact match 0.9902  token accuracy 0.9976  encoder calls/seq 1  decoder calls/seq 4
+      T=  8: exact match 0.9268  token accuracy 0.9817  encoder calls/seq 1  decoder calls/seq 8
+  seed 2: training
+    [e2d2-4/1] step     1/5000  loss 5.4976  mean(last 100) 5.4976
+    [e2d2-4/1] step  1000/5000  loss 0.0015  mean(last 100) 0.0013
+    [e2d2-4/1] step  2000/5000  loss 0.0004  mean(last 100) 0.0005
+    [e2d2-4/1] step  3000/5000  loss 0.0003  mean(last 100) 0.0003
+    [e2d2-4/1] step  4000/5000  loss 0.0002  mean(last 100) 0.0001
+    [e2d2-4/1] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 2: params 332800, final train loss 0.000089, held-out exact match (T=8) 1.0000, NELBO surrogate 0.000046
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 1
+      T=  2: exact match 0.9971  token accuracy 0.9993  encoder calls/seq 1  decoder calls/seq 2
+      T=  4: exact match 0.9951  token accuracy 0.9988  encoder calls/seq 1  decoder calls/seq 4
+      T=  8: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 8
+
+== e2d2-1/3 (encoder_layers=1, decoder_layers=3) ==
+  seed 0: training
+    [e2d2-1/3] step     1/5000  loss 6.3438  mean(last 100) 6.3438
+    [e2d2-1/3] step  1000/5000  loss 0.0011  mean(last 100) 0.0010
+    [e2d2-1/3] step  2000/5000  loss 0.0004  mean(last 100) 0.0004
+    [e2d2-1/3] step  3000/5000  loss 0.0003  mean(last 100) 0.0002
+    [e2d2-1/3] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [e2d2-1/3] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 0: params 267136, final train loss 0.000069, held-out exact match (T=8) 1.0000, NELBO surrogate 0.000035
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 2
+      T=  4: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 4
+      T=  8: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 8
+  seed 1: training
+    [e2d2-1/3] step     1/5000  loss 6.5426  mean(last 100) 6.5426
+    [e2d2-1/3] step  1000/5000  loss 0.0015  mean(last 100) 0.0011
+    [e2d2-1/3] step  2000/5000  loss 0.0004  mean(last 100) 0.0004
+    [e2d2-1/3] step  3000/5000  loss 0.0001  mean(last 100) 0.0002
+    [e2d2-1/3] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [e2d2-1/3] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 1: params 267136, final train loss 0.000071, held-out exact match (T=8) 0.8867, NELBO surrogate 0.000037
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 2
+      T=  4: exact match 0.9902  token accuracy 0.9976  encoder calls/seq 1  decoder calls/seq 4
+      T=  8: exact match 0.8867  token accuracy 0.9717  encoder calls/seq 1  decoder calls/seq 8
+  seed 2: training
+    [e2d2-1/3] step     1/5000  loss 5.9871  mean(last 100) 5.9871
+    [e2d2-1/3] step  1000/5000  loss 0.0011  mean(last 100) 0.0009
+    [e2d2-1/3] step  2000/5000  loss 0.0003  mean(last 100) 0.0004
+    [e2d2-1/3] step  3000/5000  loss 0.0002  mean(last 100) 0.0002
+    [e2d2-1/3] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [e2d2-1/3] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 2: params 267136, final train loss 0.000066, held-out exact match (T=8) 1.0000, NELBO surrogate 0.000033
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 2
+      T=  4: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 4
+      T=  8: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 1  decoder calls/seq 8
+
+== decoder-only-4 (encoder_layers=0, decoder_layers=4) ==
+  seed 0: training
+    [decoder-only-4] step     1/5000  loss 6.9154  mean(last 100) 6.9154
+    [decoder-only-4] step  1000/5000  loss 0.0010  mean(last 100) 0.0009
+    [decoder-only-4] step  2000/5000  loss 0.0004  mean(last 100) 0.0004
+    [decoder-only-4] step  3000/5000  loss 0.0002  mean(last 100) 0.0002
+    [decoder-only-4] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [decoder-only-4] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 0: params 267136, final train loss 0.000064, held-out exact match (T=8) 0.9961, NELBO surrogate 0.000033
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 2
+      T=  4: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 4
+      T=  8: exact match 0.9961  token accuracy 0.9990  encoder calls/seq 0  decoder calls/seq 8
+  seed 1: training
+    [decoder-only-4] step     1/5000  loss 7.6866  mean(last 100) 7.6866
+    [decoder-only-4] step  1000/5000  loss 0.0013  mean(last 100) 0.0010
+    [decoder-only-4] step  2000/5000  loss 0.0004  mean(last 100) 0.0004
+    [decoder-only-4] step  3000/5000  loss 0.0001  mean(last 100) 0.0002
+    [decoder-only-4] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [decoder-only-4] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 1: params 267136, final train loss 0.000068, held-out exact match (T=8) 1.0000, NELBO surrogate 0.000034
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 2
+      T=  4: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 4
+      T=  8: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 8
+  seed 2: training
+    [decoder-only-4] step     1/5000  loss 5.3107  mean(last 100) 5.3107
+    [decoder-only-4] step  1000/5000  loss 0.0011  mean(last 100) 0.0009
+    [decoder-only-4] step  2000/5000  loss 0.0003  mean(last 100) 0.0004
+    [decoder-only-4] step  3000/5000  loss 0.0002  mean(last 100) 0.0002
+    [decoder-only-4] step  4000/5000  loss 0.0001  mean(last 100) 0.0001
+    [decoder-only-4] step  5000/5000  loss 0.0001  mean(last 100) 0.0001
+    seed 2: params 267136, final train loss 0.000062, held-out exact match (T=8) 1.0000, NELBO surrogate 0.000032
+      T=  1: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 1
+      T=  2: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 2
+      T=  4: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 4
+      T=  8: exact match 1.0000  token accuracy 1.0000  encoder calls/seq 0  decoder calls/seq 8
+
+== inference cost ==
+  e2d2-4/1: params 332800, full stack depth 5
+    T=  1: encoder calls/seq   1  decoder calls/seq    1  layer-forwards/seq     5  best wall 0.0122 ms/seq
+    T=  2: encoder calls/seq   1  decoder calls/seq    2  layer-forwards/seq     6  best wall 0.9375 ms/seq
+    T=  4: encoder calls/seq   1  decoder calls/seq    4  layer-forwards/seq     8  best wall 2.6055 ms/seq
+    T=  8: encoder calls/seq   1  decoder calls/seq    8  layer-forwards/seq    12  best wall 3.2284 ms/seq
+  e2d2-1/3: params 267136, full stack depth 4
+    T=  1: encoder calls/seq   1  decoder calls/seq    1  layer-forwards/seq     4  best wall 0.0064 ms/seq
+    T=  2: encoder calls/seq   1  decoder calls/seq    2  layer-forwards/seq     7  best wall 0.8622 ms/seq
+    T=  4: encoder calls/seq   1  decoder calls/seq    4  layer-forwards/seq    13  best wall 2.7794 ms/seq
+    T=  8: encoder calls/seq   1  decoder calls/seq    8  layer-forwards/seq    25  best wall 3.1356 ms/seq
+  decoder-only-4: params 267136, full stack depth 4
+    T=  1: encoder calls/seq   0  decoder calls/seq    1  layer-forwards/seq     4  best wall 0.0067 ms/seq
+    T=  2: encoder calls/seq   0  decoder calls/seq    2  layer-forwards/seq     8  best wall 0.9491 ms/seq
+    T=  4: encoder calls/seq   0  decoder calls/seq    4  layer-forwards/seq    16  best wall 2.6447 ms/seq
+    T=  8: encoder calls/seq   0  decoder calls/seq    8  layer-forwards/seq    32  best wall 3.1120 ms/seq
+
+== encoder/decoder invocation scaling ==
+  fresh models; counts are structural (weight-independent), wall clock is this machine
+  prompt blocks   T blocks gen  enc calls  dec calls  baseline calls  base/enc
+              1   1          1          1          1               1       1.0
+              1   2          1          1          2               2       2.0
+              1   4          1          1          4               4       4.0
+              1   8          1          1          8               8       8.0
+              2   1          2          2          2               2       1.0
+              2   2          2          2          4               4       2.0
+              2   4          2          2          8               8       4.0
+              2   8          2          2         16              16       8.0
+              3   1          3          3          3               3       1.0
+              3   2          3          3          6               6       2.0
+              3   4          3          3         12              12       4.0
+              3   8          3          3         24              24       8.0
+
+== summary ==
+configuration      params                 EM            tok-acc           NELBO-surr
+e2d2-4/1           332800 0.9756+-0.0345    0.9939+-0.0086   0.000044+-0.000002
+    mean train loss 0.000085  mean train seconds/seed 34.1
+    T=  1: exact match 1.0000+-0.0000  token accuracy 1.0000+-0.0000
+    T=  2: exact match 0.9990+-0.0014  token accuracy 0.9998+-0.0003
+    T=  4: exact match 0.9951+-0.0040  token accuracy 0.9988+-0.0010
+    T=  8: exact match 0.9756+-0.0345  token accuracy 0.9939+-0.0086
+e2d2-1/3           267136 0.9622+-0.0534    0.9906+-0.0134   0.000035+-0.000001
+    mean train loss 0.000069  mean train seconds/seed 29.1
+    T=  1: exact match 1.0000+-0.0000  token accuracy 1.0000+-0.0000
+    T=  2: exact match 1.0000+-0.0000  token accuracy 1.0000+-0.0000
+    T=  4: exact match 0.9967+-0.0046  token accuracy 0.9992+-0.0012
+    T=  8: exact match 0.9622+-0.0534  token accuracy 0.9906+-0.0134
+decoder-only-4     267136 0.9987+-0.0018    0.9997+-0.0005   0.000033+-0.000001
+    mean train loss 0.000065  mean train seconds/seed 30.5
+    T=  1: exact match 1.0000+-0.0000  token accuracy 1.0000+-0.0000
+    T=  2: exact match 1.0000+-0.0000  token accuracy 1.0000+-0.0000
+    T=  4: exact match 1.0000+-0.0000  token accuracy 1.0000+-0.0000
+    T=  8: exact match 0.9987+-0.0018  token accuracy 0.9997+-0.0005
+
+cost ratios at the largest step count, split (e2d2-4/1) over decoder-only baseline:
+  exact_match_split_over_baseline              0.9769
+  layer_forward_ratio_split_over_baseline      0.3750
+  wall_ratio_split_over_baseline               1.0374
+  encoder_call_ratio_split_over_baseline       0.1250
+wrote /Users/dash/Documents/dev/ai_papers/e2d2-diffusion-mlx/results/experiment.json
+wrote /Users/dash/Documents/dev/ai_papers/e2d2-diffusion-mlx/results/run_log.txt
