@@ -22,8 +22,9 @@ seconds to learn, it measures nothing about the paper's Qwen3-based models or it
 summarization / translation / GSM8K / OpenWebText results, and none of its numbers are
 comparable to the paper's. What it does do is implement the mechanism end to end, check
 the invariants that carry the paper's argument, count the encoder and decoder invocations
-directly, and report what happens at toy scale — including one place where the toy
-contradicts the paper's framing.
+directly, and report what happens at toy scale. The structural half of the paper's argument
+(the encoder runs once per block, not once per step) reproduces exactly; the quality and
+throughput half does not, and the README says so where it happens.
 
 ## What is in here
 
@@ -113,8 +114,10 @@ likelihood surrogate.
   *does* change the clean representation (so the limit is a restriction, not an accident),
   and checks both models use the same decoder mask.
 - **No leakage across blocks.** Changing the clean content of a fully noised block leaves
-  that block's logits unchanged; perturbing later clean blocks leaves earlier encoder hidden
-  states unchanged (encoder block-causality). Both were live bugs in earlier drafts.
+  that block's logits unchanged, and perturbing later clean blocks leaves earlier encoder
+  hidden states unchanged (encoder block-causality). These guard the design choice that a
+  noised block must not read the hidden state of its own clean block; the mask was right
+  from the start, but nothing else in the suite would have caught it if it had not been.
 - **The mask token is explicit.** `E2D2Config.mask_id` is a validated field used at every
   corruption site, with a test that a custom id actually appears in the noised sequence
   (`tests/test_path_consistency.py`). The vocabulary put `[MASK]` last because the paper's
@@ -190,7 +193,7 @@ baseline full-network invocations to encoder invocations is therefore exactly `T
 | 3 | 8 | 3 | 24 | 24 | 8.0 |
 
 At `T = 8` with one generated block, `e2d2-4/1` performs 12 layer-forwards against the
-baseline's 32 (ratio 0.3750) and calls the encoder 0.1250 times per baseline network call
+baseline's 32 (ratio 0.3750) and calls the encoder 0.1250 times per baseline network call.
 
 What the numbers mean:
 
@@ -210,7 +213,7 @@ What the numbers mean:
   MLX overhead as the layer arithmetic inside it, so saving 20 of 32 layer-forwards buys
   nothing. The layer-forward saving is real and exact; I am not claiming a speedup.
 - **More denoising steps slightly hurt the encoder-decoder variants.** `e2d2-1/3` falls from
-  1.000 exact match at `T=1,2` to 0.962 at `T=8`, while the baseline stays at 0.999. With no
+  1.0000 exact match at `T=1,2` to 0.9622 at `T=8`, while the baseline stays at 0.9987. With no
   re-masking, every extra step is another chance to overwrite a position the model had
   already right, and the smaller decoder appears to be less reliable at the later,
   low-noise steps. The paper reports all its results at `T = L` steps and does not publish a
@@ -226,8 +229,8 @@ What the numbers mean:
   vocabulary and 8-token sequences. It is small enough to solve exactly, which is what makes
   the cost comparison clean, but it exercises almost nothing the paper's benchmarks do.
 - **The paper's numbers are not reproduced anywhere here.** No Qwen3, no 7-8B model, no
-  ROUGE/BLEU/pass@1, no `T = L` sampling, no 3x-faster-than-MDLM or ~75%-throughput claims,
-  no H100 tokens/sec, no training-FLOPs table.
+  ROUGE/BLEU/pass@1, no `T = L` sampling protocol, no 3x-faster-than-MDLM or ~75%-throughput
+  claims, no H100 tokens/sec, no training-FLOPs table.
 - **Scale.** ~330k parameters and 8-token sequences against hundreds of millions of tokens
   of training data in the paper. Nothing here says anything about whether E2D2 helps at scale.
 - **The decoder's own-clean-block quadrant.** The paper's Figure 2 says a noised token
@@ -248,8 +251,8 @@ What the numbers mean:
 - **No KV cache.** The sampler re-runs the encoder over the accumulated clean prefix on every
   block, which is O(prefix) per block rather than O(block). This does not change the encoder
   *invocation* count — which is the thing being measured — but it does make each encoder call
-  more expensive than the paper's cached version, and it is part of why the wall-clock ratio
-  is 0.99 rather than below 1.
+  more expensive than the paper's cached version, and it is a second reason (besides per-call
+  overhead) not to expect a wall-clock win from the layer-forward saving.
 - **The unmasking rule is mine.** The paper specifies `T` decoder applications and an abstract
   `Sample(...)`; the confidence-based schedule, the `ceil(i*S/T)` clean target and the
   treatment of `[MASK]` as unpredictable are all choices here.
